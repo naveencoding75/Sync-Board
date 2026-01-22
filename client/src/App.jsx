@@ -125,7 +125,33 @@ function App() {
     socket.emit('updateBoard', { boardId: newBoard._id, newBoardData: newBoard });
   };
 
-  if (!boardData) return <h2>Loading Board...</h2>;
+  const deleteTask = (taskId, columnId) => {
+    if(!window.confirm("Delete this task?")) return;
+
+    const newBoard = { ...boardData };
+
+    // 1. Remove task ID from the column
+    const column = newBoard.columns[columnId];
+    const newTaskIds = column.taskIds.filter(id => id !== taskId);
+    
+    newBoard.columns = {
+      ...newBoard.columns,
+      [columnId]: { ...column, taskIds: newTaskIds }
+    };
+
+    // 2. Remove the actual task object (Optional cleanup, good for performance)
+    delete newBoard.tasks[taskId];
+
+    // 3. Update State & Server
+    setBoardData(newBoard);
+    socket.emit('updateBoard', { boardId: newBoard._id, newBoardData: newBoard });
+  };
+
+  if (!boardData) return (
+    <div style={{ color: 'white', padding: '20px', textAlign: 'center' }}>
+      <h2>Loading Board...</h2>
+    </div>
+  );
 
   return (
     <div className="board-container">
@@ -133,6 +159,7 @@ function App() {
         onClick={() => {
           localStorage.removeItem('token');
           setToken(null);
+          window.location.reload();
         }}
         style={{ position: 'absolute', top: 10, right: 10, zIndex: 100 }}
       >
@@ -161,8 +188,41 @@ function App() {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
+                            style={{
+                              userSelect: "none",
+                              padding: 16,
+                              margin: "0 0 8px 0",
+                              minHeight: "50px",
+                              backgroundColor: "white",
+                              color: "black",
+                              display: "flex",            // <--- Layout fix
+                              justifyContent: "space-between", 
+                              alignItems: "center",
+                              ...provided.draggableProps.style
+                            }}
                           >
-                            {task.content}
+                            <span>{task.content}</span>
+                            
+                            {/* DELETE BUTTON */}
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevents dragging when clicking delete
+                                deleteTask(task.id, column.id);
+                              }}
+                              style={{
+                                background: 'red',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                cursor: 'pointer',
+                                fontSize: '10px',
+                                marginLeft: '10px'
+                              }}
+                            >
+                              X
+                            </button>
                           </div>
                         )}
                       </Draggable>
