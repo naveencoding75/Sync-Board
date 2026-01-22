@@ -6,7 +6,7 @@ import Login from './Login';
 import io from 'socket.io-client';
 
 // Connect to backend
-const socket = io('http://localhost:5000');
+const socket = io(import.meta.env.VITE_API_URL);
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -22,7 +22,7 @@ function App() {
 
     async function fetchBoard() {
       try {
-        const res = await axios.get('http://localhost:5000/api/board', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/board`, {
           headers: { Authorization: token } // <--- Send Token here
         });
         setBoardData(res.data);
