@@ -4,8 +4,8 @@
 
 **SyncBoard** is a full-stack project management tool (Trello clone) that features **real-time synchronization**. When one user moves a task, it instantly updates on every other active user's screen without a page refresh.
 
-🔗 **Live Demo:** [Insert Your Vercel Link Here]  
-🔗 **Backend API:** [Insert Your Render Link Here]
+🔗 **Live Demo:** (https://sync-board-iota.vercel.app/)  
+🔗 **Backend API:** https://sync-board-k6az.onrender.com/
 
 ## 🚀 Key Features (Why this project stands out)
 
